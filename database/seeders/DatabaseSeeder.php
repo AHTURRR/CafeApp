@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
 
         // Akun contoh hanya untuk lingkungan pengembangan dan test.
         if (app()->environment(['local', 'testing'])) {
-            $this->call(DevUsersSeeder::class);
+            $this->call([DevUsersSeeder::class, DevCatalogSeeder::class]);
         }
     }
 }

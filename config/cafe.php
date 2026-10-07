@@ -14,4 +14,11 @@ return [
      | Zona waktu bisnis untuk penomoran order harian (dipakai mulai langkah I-3).
      */
     'business_timezone' => env('CAFE_BUSINESS_TIMEZONE', env('APP_TIMEZONE', 'UTC')),
+
+    /*
+     | Penyimpanan gambar produk. 'public' = storage/app/public (jalankan `php artisan storage:link`).
+     | Penyedia lain (Cloudinary/S3) cukup mengganti implementasi ImageStorageInterface.
+     */
+    'image_disk' => env('CAFE_IMAGE_DISK', 'public'),
+    'max_image_kb' => (int) env('CAFE_MAX_IMAGE_KB', 2048),
 ];

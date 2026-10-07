@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -36,6 +38,9 @@ final class ApiExceptionRenderer
             $e instanceof AccessDeniedHttpException => self::json(403, 'FORBIDDEN', 'Anda tidak memiliki akses ke halaman ini.'),
             $e instanceof ModelNotFoundException,
             $e instanceof NotFoundHttpException => self::json(404, 'NOT_FOUND', 'Data tidak ditemukan.'),
+            // Pengaman terakhir bila aturan di Service terlewat (mis. dua request bersamaan) dan database menolak.
+            $e instanceof UniqueConstraintViolationException => self::json(409, 'DUPLICATE_RESOURCE', 'Data dengan nilai yang sama sudah ada.'),
+            $e instanceof QueryException && (string) $e->getCode() === '23503' => self::json(409, 'RESOURCE_IN_USE', 'Data masih dipakai oleh data lain.'),
             $e instanceof MethodNotAllowedHttpException => self::json(405, 'METHOD_NOT_ALLOWED', 'Metode request tidak diizinkan.'),
             $e instanceof TooManyRequestsHttpException => self::json(429, 'TOO_MANY_REQUESTS', 'Terlalu banyak permintaan. Coba lagi beberapa saat lagi.', [], $e->getHeaders()),
             $e instanceof HttpExceptionInterface && $e->getStatusCode() < 500 => self::json($e->getStatusCode(), 'HTTP_ERROR', 'Permintaan tidak dapat diproses.', [], $e->getHeaders()),
